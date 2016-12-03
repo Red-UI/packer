@@ -86,6 +86,7 @@ module.exports = exports = (options) => {
   bs.init({ 
     server: cwd,
     port: port,
+    open: false,
     middleware: middlewares
   })
 
