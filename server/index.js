@@ -18,6 +18,24 @@ module.exports = exports = (options) => {
   const index = serveIndex(cwd, { icons: true, view: 'details' })
 
   const middlewares = [
+    // map /dist to memFs
+    {
+      route: '/dist', // per-route
+      handle: (req, res, next) => {
+        if (req.url === '/') {
+          return res.end('This is dist directory.')
+        }
+        const filePath = path.join(cwd, 'dist', req.url)
+        try {
+          const file = customFs.readFileSync(filePath)
+          res.setHeader('Content-Type', mime.lookup(filePath))
+          res.end(file)
+        } catch(err) {
+          res.end(`File: ${filePath} Not found.`)
+        }
+      }
+    },
+
     (req, res, next) => {
       try {
         const stat = fs.statSync(path.join(cwd, req.url))
@@ -34,25 +52,7 @@ module.exports = exports = (options) => {
 
   if (options.type === 'component') {
     // component dev need handle
-    // 1. /dist map to memFs
-    // 2. /demo/*.jsx map to html
-
-    middlewares.unshift({
-      route: '/dist', // per-route
-      handle: (req, res, next) => {
-        if (req.url === '/') {
-          return res.end('This is dist directory.')
-        }
-        const filePath = path.join(cwd, 'dist', req.url)
-        try {
-          const file = customFs.readFileSync(filePath)
-          res.setHeader('Content-Type', mime.lookup(filePath))
-          res.end(file)
-        } catch(err) {
-          res.end(`File: ${filePath} Not found.`)
-        }
-      }
-    })
+    // /demo/*.jsx map to html
 
     const demoTemplate = ejs.compile(fs.readFileSync(path.join(__dirname, './assets/demo.ejs.html'), 'utf-8'), {})
     middlewares.unshift({
@@ -74,6 +74,9 @@ module.exports = exports = (options) => {
     })
   }
 
+  /**
+   * handle favicon.ico
+   */
   middlewares.unshift(
     (req, res, next) => {
       if (/favicon\.ico$/i.test(req.url)) {
