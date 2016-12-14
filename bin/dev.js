@@ -1,8 +1,10 @@
-const yargs = require('yargs')
+#!/usr/bin/env node
+
 const path = require('path')
 const fs = require('fs')
 const chalk = require('chalk')
 const cwd = process.cwd()
+const debug = require('debug')('bin/dev')
 
 function detectEntry(cwd, type) {
   try {
@@ -35,21 +37,34 @@ function detectEntry(cwd, type) {
   }
 }
 
-module.exports = (redfile) => {
-  const devType = redfile.type
-  const options = {
-    cwd: cwd,
-    entry: detectEntry(cwd, devType)
-  }
-
-  if (devType === 'component') {
-    console.log(`Start ${chalk.cyan('Component')} ${chalk.green('Development')} Mode.`)
-    require('../lib/component-dev')(options)
-  } else if (devType === 'project') {
-    console.log(`Start ${chalk.cyan('Project')} ${chalk.green('Development')} Mode.`)
-    require('../lib/project-dev')(options)
-  } else {
-    console.log('Unknown build type: %s in redfile.json', chalk.red(devType))
+function getRedfileOptions() {
+  const redfileOptions = {}
+  try {
+    const redfile = require(path.join(cwd, 'redfile.json'))
+    Object.assign(redfileOptions, redfile)
+  } catch(err) {
+    console.log(`Can not find or open ${chalk.red('redfile.json')} here, please check.`)
+    debug(err.stack)
     process.exit(1)
   }
+  return redfileOptions
+}
+
+// run
+const redfile = getRedfileOptions()
+const devType = redfile.type
+const options = {
+  cwd: cwd,
+  entry: detectEntry(cwd, devType)
+}
+
+if (devType === 'component') {
+  console.log(`Start ${chalk.cyan('Component')} ${chalk.green('Development')} Mode.`)
+  require('../lib/component-dev')(options)
+} else if (devType === 'project') {
+  console.log(`Start ${chalk.cyan('Project')} ${chalk.green('Development')} Mode.`)
+  require('../lib/project-dev')(options)
+} else {
+  console.log('Unknown build type: %s in redfile.json', chalk.red(devType))
+  process.exit(1)
 }
