@@ -51,8 +51,7 @@
     "style-loader": "^0.13.1",
     "url-loader": "^0.5.7",
     "webpack": "^1.14.0",
-    "webpack-core": "^0.6.8",
-    "yargs": "^6.4.0"
+    "webpack-core": "^0.6.8"
   },
   "devDependencies": {
     "debug": "^2.3.3"
