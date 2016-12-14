@@ -6,16 +6,25 @@ const chalk = require('chalk')
 const cwd = process.cwd()
 const debug = require('debug')('bin/dev')
 
-function detectEntry(cwd, type) {
+function detectEntry(cwd, type, isSpa) {
   try {
     if (type === 'project') {
-      const srcFiles = fs.readdirSync(path.join(cwd, 'src')) || []
-      const entry = srcFiles.filter((filename) => /^index.jsx?$/.test(filename))
-        .map((filename) => path.join(cwd, 'src', filename))
-      if (entry.length === 0) {
-        throw new Error('Entry Not Found')
+      if (isSpa) { // SPA
+        const srcFiles = fs.readdirSync(path.join(cwd, 'src')) || []
+        const entry = srcFiles.filter((filename) => /^index.jsx?$/.test(filename))
+          .map((filename) => path.join(cwd, 'src', filename))
+        if (entry.length === 0) {
+          throw new Error('Entry Not Found')
+        }
+        return entry
+      } else {
+        // Multi entry
+        const pages = fs.readdirSync(path.join(cwd, 'src/pages'))
+        return pages.reduce((entry, currentPage) => {
+          entry[`pages/${currentPage}`] = path.join(cwd, 'src/pages/', currentPage, 'index')
+          return entry
+        }, {})
       }
-      return entry
     } else if (type == 'component') {
       const demos = fs.readdirSync(path.resolve(cwd, 'demo/'))
       return demos
@@ -43,7 +52,8 @@ function getRedfileOptions() {
     const redfile = require(path.join(cwd, 'redfile.json'))
     Object.assign(redfileOptions, redfile)
   } catch(err) {
-    console.log(`Can not find or open ${chalk.red('redfile.json')} here, please check.`)
+    console.log(`${chalk.red('[ERROR]')} Can not find or open ${chalk.yellow('redfile.json')} here, please check.`)
+    console.log(`${chalk.red('[ERROR]')} 找不到 ${chalk.yellow('redfile.json')} 文件，不是 Red-UI 项目，可能进入了错误的目录，请确认。`)
     debug(err.stack)
     process.exit(1)
   }
@@ -55,7 +65,13 @@ const redfile = getRedfileOptions()
 const devType = redfile.type
 const options = {
   cwd: cwd,
-  entry: detectEntry(cwd, devType)
+  entry: detectEntry(cwd, devType, redfile.spa),
+  devType: devType,
+  spa: redfile.spa
+}
+
+if (devType === 'project' && redfile.spa === false) {
+  options.filename = '[name]/index.js'
 }
 
 if (devType === 'component') {

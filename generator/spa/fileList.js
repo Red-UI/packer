@@ -1,6 +1,6 @@
 'use strict';
 
-module.exports = {
+module.exports = (answers) => ({
   'package.json': {},
 
   'index.html': {},
@@ -11,4 +11,4 @@ module.exports = {
   'src/pages/Home/index.js': {},
   'src/pages/Home/Home.jsx': {},
   'src/pages/Home/Home.less': {}
-}
+})

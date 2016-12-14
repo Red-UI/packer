@@ -18,15 +18,17 @@ const generateRedfile = (redfile) => {
 }
 
 exports.generate = (type, options, redfile) => {
-  const fileList = require(`./${type}/fileList`)
+  const fileList = require(`./${type}/fileList`)(options)
   generateRedfile(redfile)
 
   Object.keys(fileList).forEach((filename) => {
     const defaultOptions = fileList[filename]
+    const renderData = Object.assign(defaultOptions, options)
     const sourcePath = path.resolve(__dirname, type, 'templates', filename)
-    const result = ejs.render(fs.readFileSync(sourcePath, 'utf-8'), Object.assign(defaultOptions, options))
-    extractFile(result, filename)
-    console.log('Extracting: ', chalk.green(filename))
+    const result = ejs.render(fs.readFileSync(sourcePath, 'utf-8'), renderData)
+    const distFilePath = renderData._dist || filename
+    extractFile(result, distFilePath)
+    console.log('Extracting: ', chalk.green(distFilePath))
   })
 
   return 'done'
