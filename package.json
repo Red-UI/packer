@@ -1,6 +1,6 @@
 {
   "name": "redui-packer",
-  "version": "0.1.1",
+  "version": "0.1.2",
   "description": "command-line tool for red-ui",
   "main": "index.js",
   "bin": {
