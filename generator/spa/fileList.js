@@ -2,6 +2,8 @@
 
 module.exports = (answers) => ({
   'package.json': {},
+  '.gitignore': {},
+  'README.md': {},
 
   'index.html': {},
   'src/index.jsx': {},

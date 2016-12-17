@@ -9,6 +9,7 @@ module.exports = (answers) => {
 
   return {
     'package.json': {},
+    '.gitignore': {},
     'readme.md': {},
 
     'demo/simple.jsx': {
