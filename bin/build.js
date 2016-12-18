@@ -26,14 +26,9 @@ function detectEntry(cwd, type, isSpa) {
         }, {})
       }
     } else if (type == 'component') {
-      const demos = fs.readdirSync(path.resolve(cwd, 'demo/'))
-      return demos
-        .filter((filename) => /\.jsx?$/.test(filename))
-        .reduce((result, filename) => {
-          const chunk = filename.replace(/(\.jsx?)$/, '')
-          result['demo/' + chunk] = path.resolve(cwd, 'demo/' + filename)
-          return result
-        }, {})
+      return {
+        'index': path.resolve(cwd, 'src/index')
+      }
     }
 
   } catch(err) {
