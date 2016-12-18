@@ -62,8 +62,8 @@ module.exports = exports = (options) => {
           const chunkName = (req.url.match(/\/([^\.]+)/) || [, ''])[1]
           const demoHtml = demoTemplate({
             title: `DEMO-${chunkName}`,
-            script: `http://localhost:${port}/dist/demo/${chunkName}.js`,
-            style: `http://localhost:${port}/dist/demo/${chunkName}.css`
+            script: `/dist/demo/${chunkName}.js`,
+            style: `/dist/demo/${chunkName}.css`
           })
           res.setHeader('Content-Type', 'text/html')
           res.end(demoHtml)
