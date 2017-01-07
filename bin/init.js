@@ -110,6 +110,6 @@ inquirer
     console.log(chalk.green('[NOTICE] ') + chalk.cyan('依赖安装完成，启动 dev 服务器...'))
     spawn.sync('red-dev', [], { stdio: 'inherit' })
   })
-  .catch((e) => {
-      console.trace(e)
+  .catch((error) => {
+    console.trace(error)
   })
