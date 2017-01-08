@@ -98,15 +98,18 @@ inquirer
       default:
         Object.assign(redfile, { type: 'component', spa: false })
     }
-    Promise.resolve(require(`../generator/utils`).generate(answers.type, answers, redfile))
-      .then(() => {
-        console.log()
-        console.log(chalk.green('[NOTICE] ') + chalk.cyan('项目文件创建完成，开始安装依赖...'))
-        spawn.sync('cnpm', ['install'], { stdio: 'inherit' })
-      })
-      .then(() => {
-        console.log()
-        console.log(chalk.green('[NOTICE] ') + chalk.cyan('依赖安装完成，启动 dev 服务器...'))
-        spawn.sync('red-dev', [], { stdio: 'inherit' })
-      })
+    return Promise.resolve(require(`../generator/utils`).generate(answers.type, answers, redfile))
+  })
+  .then(() => {
+    console.log()
+    console.log(chalk.green('[NOTICE] ') + chalk.cyan('项目文件创建完成，开始安装依赖...'))
+    spawn.sync('cnpm', ['install'], { stdio: 'inherit' })
+  })
+  .then(() => {
+    console.log()
+    console.log(chalk.green('[NOTICE] ') + chalk.cyan('依赖安装完成，启动 dev 服务器...'))
+    spawn.sync('red-dev', [], { stdio: 'inherit' })
+  })
+  .catch((error) => {
+    console.trace(error)
   })
